@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude Code local state
+.claude/
+
+# Node (only if we ever add tooling)
+node_modules/
+
+# Logs
+*.log

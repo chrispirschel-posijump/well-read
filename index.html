@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>well-read — Pittsburgh, PA</title>
+<meta name="description" content="well-read — indie / alt rock from Pittsburgh, PA. Listen to the debut record." />
+<meta name="theme-color" content="#0a0807" />
+<meta property="og:title" content="well-read" />
+<meta property="og:description" content="Indie / alt rock from Pittsburgh, PA." />
+<meta property="og:image" content="/images/well-read.png" />
+<link rel="icon" href="/images/well-read.png" />
+
+<link rel="preload" href="/Speltale-Regular.otf" as="font" type="font/otf" crossorigin />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  @font-face {
+    font-family: "Speltale";
+    src: url("/Speltale-Regular.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Metric-matched fallback so the FOUT swap from Fraunces/Georgia
+     to Speltale is visually imperceptible. Tuned for large display sizing. */
+  @font-face {
+    font-family: "Speltale Fallback";
+    src: local("Fraunces"), local("Fraunces 9pt"), local("Georgia"), local("Times New Roman");
+    size-adjust: 102%;
+    ascent-override: 92%;
+    descent-override: 22%;
+    line-gap-override: 0%;
+  }
+
+  :root {
+    --pitch:   #000000;
+    --coal:    #080808;
+    --ash:     #111111;
+    --surface: #0c0c0c;
+    --raised:  #181818;
+    --ember:     #c8501f;  /* orange primary */
+    --ember-hot: #e26a30;  /* orange hover */
+    --ember-deep:#7a2e0f;  /* orange deep */
+    --whisky:  #d4a05a;    /* warm gold secondary */
+    --bone:    #ece2cd;
+    --cream:   #f7eedb;
+    --smoke:   #807a73;
+    --smoke-dim: #4a4642;
+    --line:    rgba(236,226,205,0.10);
+    --line-strong: rgba(236,226,205,0.22);
+  }
+
+  html, body { background: var(--pitch); color: var(--bone); }
+
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-display { font-family: "Speltale", "Speltale Fallback", "Fraunces", Georgia, serif; }
+  .font-serif-alt { font-family: "Fraunces", Georgia, serif; }
+
+  .tracking-tightest { letter-spacing: -0.045em; }
+  .tracking-tighter-3 { letter-spacing: -0.03em; }
+
+  /* Moody ambient backdrop */
+  .mood-bg {
+    background:
+      radial-gradient(ellipse 70% 50% at 18% 8%,  rgba(200,80,31,0.12),  transparent 60%),
+      radial-gradient(ellipse 55% 45% at 88% 92%, rgba(212,160,90,0.07), transparent 60%),
+      radial-gradient(ellipse 90% 60% at 50% 0%,  rgba(20,20,20,0.7),    transparent 70%),
+      var(--pitch);
+  }
+
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.92  0 0 0 0 0.88  0 0 0 0 0.80  0 0 0 0.16 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .ease-spring { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .ease-quill  { transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+  /* Layered shadows tuned for pure black surfaces (red tint + subtle top highlight) */
+  .shadow-deep-sm { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 24px -12px rgba(0,0,0,0.9), 0 2px 10px -4px rgba(200,80,31,0.10); }
+  .shadow-deep    { box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 22px 50px -18px rgba(0,0,0,0.95), 0 8px 24px -8px rgba(200,80,31,0.20); }
+  .shadow-deep-lg { box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 42px 90px -28px rgba(0,0,0,1),    0 16px 40px -14px rgba(200,80,31,0.26); }
+
+  .rule { height: 1px; background: linear-gradient(90deg, transparent, var(--line-strong), transparent); }
+
+  /* Photo treatment per CLAUDE.md */
+  .photo-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #000;
+  }
+  .photo-frame img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 800ms cubic-bezier(0.2,0.7,0.2,1), opacity 400ms;
+  }
+  .photo-frame::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0) 55%),
+      linear-gradient(180deg, rgba(200,80,31,0.10), rgba(0,0,0,0.35));
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .photo-frame:hover img { transform: scale(1.04); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.85rem 1.45rem;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    transition: transform 250ms cubic-bezier(0.34,1.56,0.64,1), opacity 200ms, background-color 240ms, color 200ms, box-shadow 280ms, border-color 240ms;
+    will-change: transform;
+  }
+  .btn:active { transform: translateY(1px) scale(0.98); }
+  .btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+
+  .btn-primary {
+    background: var(--ember);
+    color: var(--cream);
+    box-shadow: 0 10px 26px -12px rgba(200,80,31,0.65), inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  .btn-primary:hover { background: var(--ember-hot); transform: translateY(-2px); box-shadow: 0 16px 34px -14px rgba(226,106,48,0.75); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--bone);
+    border: 1px solid var(--line-strong);
+  }
+  .btn-ghost:hover { background: rgba(236,226,205,0.06); border-color: var(--bone); transform: translateY(-2px); }
+
+  /* Nav link */
+  .nav-link {
+    position: relative;
+    color: rgba(236,226,205,0.7);
+    font-size: 0.84rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 200ms;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 100%;
+    bottom: -6px;
+    height: 1px;
+    background: var(--ember);
+    transition: right 380ms cubic-bezier(0.2,0.7,0.2,1);
+  }
+  .nav-link:hover { color: var(--cream); }
+  .nav-link:hover::after { right: 0; }
+  .nav-link:focus-visible { outline: 2px solid var(--ember); outline-offset: 4px; border-radius: 2px; }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ember-hot);
+    font-weight: 500;
+  }
+
+  /* Track row */
+  .track-row {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 0.5rem 0.9rem 0;
+    border-bottom: 1px dashed var(--line);
+    transition: padding-left 320ms cubic-bezier(0.2,0.7,0.2,1), color 220ms, background-color 220ms;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 4px;
+  }
+  .track-row:last-child { border-bottom: 0; }
+  .track-row:hover { padding-left: 0.6rem; color: var(--whisky); }
+  .track-row:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .track-row.is-active { color: var(--ember-hot); padding-left: 0.6rem; }
+  .track-row.is-active .track-num,
+  .track-row.is-active .track-title,
+  .track-row.is-active .track-len { color: var(--ember-hot); }
+  .track-num   { font-family: "Fraunces", serif; font-size: 0.85rem; color: var(--smoke); font-variant-numeric: tabular-nums; transition: color 220ms; }
+  .track-title { font-family: "Fraunces", serif; font-size: 1.15rem; line-height: 1.3; color: var(--cream); transition: color 220ms; }
+  .track-len   { font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--smoke); transition: color 220ms; }
+  .track-row .track-cue {
+    display: inline-block;
+    width: 0.55rem; height: 0.55rem; border-radius: 999px;
+    background: var(--ember);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 220ms, transform 280ms cubic-bezier(0.34,1.56,0.64,1);
+    margin-left: 0.6rem;
+    vertical-align: middle;
+  }
+  .track-row.is-active .track-cue { opacity: 1; transform: scale(1); }
+
+  /* Hero wordmark */
+  .wordmark {
+    font-family: "Speltale", "Speltale Fallback", "Fraunces", Georgia, serif;
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    color: var(--cream);
+    text-shadow: 0 2px 30px rgba(0,0,0,0.6);
+  }
+  .wordmark .dot { color: var(--ember-hot); }
+
+  /* Hero full-bleed image */
+  .hero-shell { position: relative; min-height: 100vh; min-height: 100dvh; overflow: hidden; isolation: isolate; }
+  .hero-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    z-index: 0;
+    filter: contrast(1.05) saturate(0.85) brightness(0.6);
+  }
+  .hero-tint {
+    position: absolute; inset: 0; z-index: 1;
+    background:
+      radial-gradient(ellipse 80% 60% at 15% 30%, rgba(200,80,31,0.22), transparent 60%),
+      linear-gradient(180deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.92) 100%),
+      linear-gradient(90deg, rgba(0,0,0,0.75), rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.45));
+    mix-blend-mode: multiply;
+  }
+  .hero-vignette {
+    position: absolute; inset: 0; z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 90% at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%);
+  }
+  .hero-content { position: relative; z-index: 3; }
+  .hero-bottom-fade {
+    position: absolute; left:0; right:0; bottom: 0; height: 25%; z-index: 2;
+    background: linear-gradient(to bottom, transparent, var(--pitch));
+    pointer-events: none;
+  }
+
+  /* Entry animation */
+  @keyframes rise { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+  .rise { animation: rise 1000ms cubic-bezier(0.2,0.7,0.2,1) both; }
+  .rise-1 { animation-delay: 0.05s; }
+  .rise-2 { animation-delay: 0.18s; }
+  .rise-3 { animation-delay: 0.34s; }
+  .rise-4 { animation-delay: 0.5s; }
+
+  /* Tag rail */
+  .tag-rail {
+    display: flex; gap: 1.25rem; align-items: center;
+    font-family: "Fraunces", serif; font-style: italic;
+    font-size: 0.95rem; color: var(--smoke);
+  }
+  .tag-dot { width: 4px; height: 4px; border-radius: 999px; background: var(--ember); display: inline-block; }
+
+  /* Section panels (dark surface) */
+  .panel {
+    background: linear-gradient(180deg, var(--surface), var(--coal));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* Show row */
+  .show {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.9fr) 2fr 1.4fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+    transition: background-color 260ms, transform 260ms cubic-bezier(0.2,0.7,0.2,1), padding-left 280ms;
+    border-radius: 6px;
+  }
+  .show:hover { background: var(--raised); padding-left: 1.6rem; }
+  .show-date-day { display: block; font-family: "Fraunces", serif; font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ember-hot); }
+  .show-date-num { display: block; font-family: "Speltale", "Speltale Fallback", "Fraunces", serif; font-size: 2.2rem; line-height: 1; color: var(--cream); letter-spacing: -0.02em; margin-top: 0.15rem; }
+  .show-date-mo  { display: block; font-family: "Fraunces", serif; font-size: 0.85rem; color: var(--smoke); margin-top: 0.25rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .show-venue    { font-family: "Fraunces", serif; font-size: 1.25rem; color: var(--cream); line-height: 1.25; }
+  .show-venue a  { color: inherit; transition: color 200ms; border-bottom: 1px dashed rgba(236,226,205,0.25); padding-bottom: 1px; }
+  .show-venue a:hover { color: var(--ember-hot); border-bottom-color: var(--ember-hot); }
+  .show-city     { font-size: 0.85rem; color: var(--smoke); margin-top: 0.25rem; letter-spacing: 0.04em; }
+  .show-with     { font-family: "Fraunces", serif; font-style: italic; color: var(--smoke); font-size: 0.95rem; }
+
+  /* Past show — greyed out */
+  .show.is-past .show-date-day { color: var(--smoke-dim); }
+  .show.is-past .show-date-num { color: var(--smoke); }
+  .show.is-past .show-date-mo  { color: var(--smoke-dim); }
+  .show.is-past .show-venue    { color: var(--smoke); }
+  .show.is-past .show-venue a  { border-bottom-color: rgba(236,226,205,0.15); }
+  .show.is-past .show-city     { color: var(--smoke-dim); }
+  .show.is-past .show-with     { color: var(--smoke-dim); }
+
+  .past-tag {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px dashed var(--line-strong);
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: var(--smoke);
+    letter-spacing: 0.04em;
+  }
+  .past-tag::before {
+    content: "";
+    width: 5px; height: 5px; border-radius: 999px;
+    background: var(--smoke-dim);
+  }
+
+  /* Booking CTA card */
+  .booking-cta {
+    position: relative;
+    margin-top: 2.5rem;
+    padding: 2.5rem 2rem;
+    border-radius: 10px;
+    background:
+      radial-gradient(ellipse 80% 100% at 0% 50%, rgba(200,80,31,0.10), transparent 60%),
+      linear-gradient(180deg, var(--raised), var(--coal));
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .booking-cta::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--ember), transparent);
+  }
+  .btn-lg {
+    padding: 1.15rem 2rem;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+  }
+
+  /* Band quartet — 2x2 portrait grid */
+  .band-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .band-tile {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #000;
+    aspect-ratio: 3 / 4;
+    cursor: default;
+  }
+  .band-tile img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 800ms cubic-bezier(0.2,0.7,0.2,1), filter 600ms;
+    filter: saturate(0.95);
+  }
+  .band-tile:hover img { transform: scale(1.04); filter: saturate(1.05); }
+  .band-tile::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 38%, rgba(0,0,0,0) 60%),
+      linear-gradient(180deg, rgba(200,80,31,0.06), rgba(0,0,0,0.2));
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .band-tile-caption {
+    position: absolute;
+    left: 0.95rem;
+    bottom: 0.75rem;
+    z-index: 2;
+  }
+  .band-tile-name {
+    font-family: "Speltale", "Speltale Fallback", "Fraunces", serif;
+    font-size: 1.55rem;
+    line-height: 1;
+    color: var(--cream);
+    letter-spacing: -0.03em;
+    text-shadow: 0 1px 12px rgba(0,0,0,0.7);
+  }
+  .band-tile-role {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--ember-hot);
+    margin-top: 0.25rem;
+    letter-spacing: 0.04em;
+  }
+  @media (max-width: 480px) {
+    .band-tile-name { font-size: 1.25rem; }
+    .band-tile-role { font-size: 0.72rem; }
+  }
+
+  @media (max-width: 720px) {
+    .show { grid-template-columns: 92px 1fr; grid-template-rows: auto auto; row-gap: 0.6rem; }
+    .show-with { grid-column: 2; }
+    .show-cta  { grid-column: 1 / -1; justify-self: start; }
+  }
+</style>
+</head>
+<body class="mood-bg">
+
+  <!-- HERO with full-bleed image -->
+  <section id="top" class="hero-shell">
+    <img class="hero-img" src="/images/IMG_2493 copy.jpg" alt="" />
+    <div class="hero-tint"></div>
+    <div class="hero-vignette"></div>
+    <div class="grain" style="z-index:2"></div>
+    <div class="hero-bottom-fade"></div>
+
+    <!-- Floating nav -->
+    <header class="hero-content">
+      <nav class="max-w-6xl mx-auto px-5 sm:px-8 pt-6 sm:pt-8 flex items-center justify-between">
+        <a href="#top" class="flex items-center gap-3">
+          <span class="font-display text-2xl sm:text-[1.65rem] leading-none tracking-tightest text-[color:var(--cream)]">well<span class="text-[color:var(--ember-hot)]">‑</span>read<span class="text-[color:var(--ember-hot)]">.</span></span>
+        </a>
+        <ul class="hidden md:flex items-center gap-9">
+          <li><a class="nav-link" href="#listen">Listen</a></li>
+          <li><a class="nav-link" href="#shows">Shows</a></li>
+          <li><a class="nav-link" href="#about">About</a></li>
+          <li><a class="nav-link" href="#follow">Follow</a></li>
+        </ul>
+        <a href="https://wellread412.bandcamp.com/album/well-read" target="_blank" rel="noopener" class="btn btn-primary text-xs sm:text-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4l14 8-14 8V4z" fill="currentColor"/></svg>
+          Bandcamp
+        </a>
+      </nav>
+    </header>
+
+    <!-- Hero content -->
+    <div class="hero-content max-w-6xl mx-auto px-5 sm:px-8 absolute inset-x-0 bottom-0 pb-16 sm:pb-24 left-1/2 -translate-x-1/2 w-full">
+      <div class="max-w-3xl">
+        <p class="eyebrow rise rise-1">Pittsburgh, PA &nbsp;·&nbsp; alt / indie rock</p>
+        <h1 class="wordmark text-[22vw] sm:text-[16vw] lg:text-[12rem] mt-5 rise rise-2">
+          well<span class="text-[color:var(--ember-hot)]">‑</span>read<span class="dot">.</span>
+        </h1>
+        <div class="mt-9 flex flex-wrap items-center gap-3 rise rise-3">
+          <a href="#listen" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4l14 8-14 8V4z" fill="currentColor"/></svg>
+            Listen
+          </a>
+          <a href="#shows" class="btn btn-ghost">Shows</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LISTEN -->
+  <section id="listen" class="relative panel">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
+      <div class="grid lg:grid-cols-12 gap-10 lg:gap-14">
+        <div class="lg:col-span-4">
+          <p class="eyebrow">The Songs</p>
+          <h2 class="font-display tracking-tightest text-5xl sm:text-6xl mt-3 leading-[0.95] text-[color:var(--cream)]">
+            well<span class="text-[color:var(--ember-hot)]">‑</span>read demos
+          </h2>
+          <p class="mt-5 text-[color:var(--bone)]/75 max-w-sm">
+            Recorded over a few months in preparation for our upcoming full-length album,
+            these demos are a first draft of what we've been working on. Free on Bandcamp.
+          </p>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a href="https://wellread412.bandcamp.com/album/well-read" target="_blank" rel="noopener" class="btn btn-primary">Get it on Bandcamp</a>
+            <a href="#tracks" class="btn btn-ghost">Tracklist</a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-8">
+          <div class="shadow-deep-lg rounded-md overflow-hidden bg-black ring-1 ring-[color:var(--line)]">
+            <iframe
+              id="bc-player"
+              data-base-src="https://bandcamp.com/EmbeddedPlayer/album=2006014006/size=large/bgcol=0a0a0a/linkcol=e26a30/tracklist=true/transparent=true/"
+              title="well-read — well read (Bandcamp player)"
+              style="border:0; width:100%; height:580px; display:block; background:#0a0a0a;"
+              src="https://bandcamp.com/EmbeddedPlayer/album=2006014006/size=large/bgcol=0a0a0a/linkcol=e26a30/tracklist=true/transparent=true/"
+              seamless
+              loading="lazy">
+              <a href="https://wellread412.bandcamp.com/album/well-read">well read by well-read</a>
+            </iframe>
+          </div>
+          <p class="mt-3 text-xs text-[color:var(--smoke)]">Player by Bandcamp · click any track to preview · full plays on Bandcamp.</p>
+        </div>
+      </div>
+
+      <!-- TRACKLIST -->
+      <div id="tracks" class="mt-20 grid lg:grid-cols-12 gap-10 lg:gap-14">
+        <div class="lg:col-span-4">
+          <p class="eyebrow">Tracklist</p>
+          <h3 class="font-display tracking-tightest text-3xl sm:text-4xl mt-3 leading-tight text-[color:var(--cream)]">Eleven in a row.</h3>
+          <p class="mt-4 text-[color:var(--bone)]/70 max-w-xs text-[0.98rem]">
+            Consider these demos the foreword, the author's notes, the acknowledgements.
+            Click on a track. Play in the window above.
+          </p>
+        </div>
+        <ol class="lg:col-span-8" id="tracklist">
+          <li class="track-row" role="button" tabindex="0" data-track="1"><span class="track-num">01</span><span class="track-title">swinging<span class="track-cue"></span></span><span class="track-len">3:19</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="2"><span class="track-num">02</span><span class="track-title">clementine<span class="track-cue"></span></span><span class="track-len">3:28</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="3"><span class="track-num">03</span><span class="track-title">it ain't the years honey, it's the mileage<span class="track-cue"></span></span><span class="track-len">2:47</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="4"><span class="track-num">04</span><span class="track-title">sinner<span class="track-cue"></span></span><span class="track-len">4:04</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="5"><span class="track-num">05</span><span class="track-title">mea culpa<span class="track-cue"></span></span><span class="track-len">4:09</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="6"><span class="track-num">06</span><span class="track-title">4618<span class="track-cue"></span></span><span class="track-len">4:13</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="7"><span class="track-num">07</span><span class="track-title">never here<span class="track-cue"></span></span><span class="track-len">4:33</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="8"><span class="track-num">08</span><span class="track-title">wanted more<span class="track-cue"></span></span><span class="track-len">4:07</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="9"><span class="track-num">09</span><span class="track-title">front yard<span class="track-cue"></span></span><span class="track-len">4:21</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="10"><span class="track-num">10</span><span class="track-title">chatter<span class="track-cue"></span></span><span class="track-len">4:27</span></li>
+          <li class="track-row" role="button" tabindex="0" data-track="11"><span class="track-num">11</span><span class="track-title">good friday pt.2<span class="track-cue"></span></span><span class="track-len">5:38</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWS -->
+  <section id="shows" class="relative">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
+      <div class="flex items-end justify-between flex-wrap gap-6">
+        <div>
+          <p class="eyebrow">Recent</p>
+          <h2 class="font-display tracking-tightest text-5xl sm:text-6xl mt-3 leading-[0.95] text-[color:var(--cream)]">Shows.</h2>
+        </div>
+        <p class="text-[color:var(--bone)]/70 max-w-sm">
+          Nothing on the books right now. Here's the last room we were in.
+        </p>
+      </div>
+
+      <div class="mt-12 rounded-lg ring-1 ring-[color:var(--line)] overflow-hidden bg-[color:var(--coal)] shadow-deep">
+        <div class="show is-past">
+          <div>
+            <span class="show-date-day">Sat</span>
+            <span class="show-date-num">16</span>
+            <span class="show-date-mo">May · 5:00–6:15pm</span>
+          </div>
+          <div>
+            <div class="show-venue"><a href="https://hometowntattoopgh.com/" target="_blank" rel="noopener">Hometown Tattoo</a></div>
+            <div class="show-city">Millvale, PA</div>
+          </div>
+          <div class="show-with">Millvale Music Fest</div>
+          <div class="show-cta">
+            <span class="past-tag">Played</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="booking-cta">
+        <div class="grid lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+          <div class="lg:col-span-7">
+            <p class="eyebrow">Booking</p>
+            <h3 class="font-display tracking-tightest text-3xl sm:text-4xl mt-3 leading-tight text-[color:var(--cream)]">
+              Got a room? Got a bill?
+            </h3>
+            <p class="mt-3 text-[color:var(--bone)]/70 max-w-md">
+              We're available and looking for dates. Send us a note — we'll write back.
+            </p>
+          </div>
+          <div class="lg:col-span-5 lg:text-right">
+            <a href="mailto:wellread412@gmail.com?subject=Booking%20inquiry%20%E2%80%94%20well-read"
+               class="btn btn-primary btn-lg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 7l9 6 9-6M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Reach out for booking information
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="relative panel">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
+      <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div class="lg:col-span-5 order-2 lg:order-1">
+          <div class="band-grid shadow-deep-lg -rotate-[1.2deg] rounded-md ring-1 ring-[color:var(--line)] p-1.5 bg-black">
+            <figure class="band-tile">
+              <img src="/images/cory.jpg" alt="Cory, well-read lead vocals" />
+              <figcaption class="band-tile-caption">
+                <div class="band-tile-name">Cory</div>
+                <div class="band-tile-role">lead vocals</div>
+              </figcaption>
+            </figure>
+            <figure class="band-tile">
+              <img src="/images/chris.jpg" alt="Chris, well-read guitar" />
+              <figcaption class="band-tile-caption">
+                <div class="band-tile-name">Chris</div>
+                <div class="band-tile-role">guitar</div>
+              </figcaption>
+            </figure>
+            <figure class="band-tile">
+              <img src="/images/kiel.jpg" alt="Kiel, well-read bass" />
+              <figcaption class="band-tile-caption">
+                <div class="band-tile-name">Kiel</div>
+                <div class="band-tile-role">bass</div>
+              </figcaption>
+            </figure>
+            <figure class="band-tile">
+              <img src="/images/ej.jpg" alt="Ej, well-read guitar" />
+              <figcaption class="band-tile-caption">
+                <div class="band-tile-name">Ej</div>
+                <div class="band-tile-role">guitar</div>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="lg:col-span-7 order-1 lg:order-2">
+          <p class="eyebrow">About the Band</p>
+          <h2 class="font-display tracking-tightest text-5xl sm:text-6xl mt-3 leading-[0.95] text-[color:var(--cream)]">
+            Nice to meet you.
+          </h2>
+          <div class="mt-6 space-y-4 text-[1.05rem] text-[color:var(--bone)]/80 max-w-2xl">
+            <p>
+              Born in the basements and garages of Greenfield, Millcreek, Bridgeville, and
+              Hazelwood, well-read pulls its roots from late-90s indie, emo, and punk rock.
+              For fans of Radiohead, Explosions in the Sky, Manchester Orchestra, and
+              American Football. With driving guitars, soaring melodies, and catchy
+              choruses, we hope you'll sing along.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE -->
+  <section id="live" class="relative">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
+      <div class="flex items-end justify-between flex-wrap gap-6">
+        <div>
+          <p class="eyebrow">Live</p>
+          <h2 class="font-display tracking-tightest text-5xl sm:text-6xl mt-3 leading-[0.95] text-[color:var(--cream)]">From the floor.</h2>
+        </div>
+        <p class="text-[color:var(--bone)]/70 max-w-sm">The Butler Street Derby. The Poetry Lounge. Millvale Music Festival. We hope to see you soon.</p>
+      </div>
+
+      <div class="mt-12 grid grid-cols-12 gap-4 sm:gap-6 items-start">
+        <div class="col-span-12 sm:col-span-7">
+          <div class="photo-frame shadow-deep aspect-[4/3]">
+            <img src="/images/IMG_9653 copy.jpg" alt="well-read on a club stage, blue lights, full band" />
+          </div>
+        </div>
+        <div class="col-span-12 sm:col-span-5 sm:row-span-2">
+          <div class="photo-frame shadow-deep aspect-[3/4]">
+            <img src="/images/PXL_20250618_014323829.MP.jpg" alt="well-read live, two guitarists under deep blue and magenta stage light" />
+          </div>
+        </div>
+        <div class="col-span-12 sm:col-span-7">
+          <div class="photo-frame shadow-deep aspect-[4/3]">
+            <img src="/images/CFC0531F-4109-4B6D-874B-574D9A73514B.JPG" alt="well-read live, stage with pride flag backdrop" />
+          </div>
+        </div>
+        <div class="col-span-12 sm:col-span-5">
+          <div class="photo-frame shadow-deep aspect-[3/4]">
+            <img src="/images/IMG_9651 2 copy.jpg" alt="well-read on a small stage washed in disco-light dots, full band" />
+          </div>
+        </div>
+        <div class="col-span-12 sm:col-span-7">
+          <div class="photo-frame shadow-deep aspect-[4/3]">
+            <img src="/images/IMG_2493 copy.jpg" alt="well-read outdoor performance at golden hour" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOLLOW / FOOTER -->
+  <footer id="follow" class="relative grain panel">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-12 relative">
+      <div class="grid lg:grid-cols-12 gap-10">
+        <div class="lg:col-span-6">
+          <p class="eyebrow">Stay in touch</p>
+          <h2 class="font-display tracking-tightest text-5xl sm:text-6xl mt-3 leading-[0.95] text-[color:var(--cream)]">
+            Come find us<span class="text-[color:var(--ember-hot)]">.</span>
+          </h2>
+          <p class="mt-5 text-[color:var(--bone)]/70 max-w-md">
+            New songs, new shows, occasional photos from the road. We don't post much — so
+            when we do, it usually means something.
+          </p>
+        </div>
+        <div class="lg:col-span-6">
+          <ul class="grid sm:grid-cols-2 gap-3">
+            <li>
+              <a href="https://wellread412.bandcamp.com/album/well-read" target="_blank" rel="noopener"
+                 class="flex items-center justify-between gap-4 px-5 py-4 rounded-md border border-[color:var(--line)] bg-[color:var(--surface)] shadow-deep-sm transition ease-quill duration-300 hover:-translate-y-0.5 hover:border-[color:var(--ember)] hover:shadow-deep focus-visible:outline-2 focus-visible:outline-[color:var(--ember)]">
+                <span class="font-serif-alt text-lg text-[color:var(--cream)]">Bandcamp</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="text-[color:var(--smoke)]"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="mailto:wellread412@gmail.com"
+                 class="flex items-center justify-between gap-4 px-5 py-4 rounded-md border border-[color:var(--line)] bg-[color:var(--surface)] shadow-deep-sm transition ease-quill duration-300 hover:-translate-y-0.5 hover:border-[color:var(--ember)] hover:shadow-deep focus-visible:outline-2 focus-visible:outline-[color:var(--ember)]">
+                <span class="font-serif-alt text-lg text-[color:var(--cream)]">Email</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="text-[color:var(--smoke)]"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="#"
+                 class="flex items-center justify-between gap-4 px-5 py-4 rounded-md border border-[color:var(--line)] bg-[color:var(--surface)] shadow-deep-sm transition ease-quill duration-300 hover:-translate-y-0.5 hover:border-[color:var(--ember)] hover:shadow-deep focus-visible:outline-2 focus-visible:outline-[color:var(--ember)]">
+                <span class="font-serif-alt text-lg text-[color:var(--cream)]">Instagram</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="text-[color:var(--smoke)]"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="#"
+                 class="flex items-center justify-between gap-4 px-5 py-4 rounded-md border border-[color:var(--line)] bg-[color:var(--surface)] shadow-deep-sm transition ease-quill duration-300 hover:-translate-y-0.5 hover:border-[color:var(--ember)] hover:shadow-deep focus-visible:outline-2 focus-visible:outline-[color:var(--ember)]">
+                <span class="font-serif-alt text-lg text-[color:var(--cream)]">Spotify</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="text-[color:var(--smoke)]"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="rule mt-16"></div>
+      <div class="mt-8 flex flex-wrap items-center justify-between gap-4 text-xs text-[color:var(--smoke)]">
+        <p>© 2026 well-read. Pittsburgh, PA.</p>
+        <p class="font-serif-alt italic">"it ain't the years honey, it's the mileage."</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const iframe = document.getElementById('bc-player');
+      if (!iframe) return;
+      const baseSrc = iframe.dataset.baseSrc;
+      const rows = document.querySelectorAll('#tracklist .track-row');
+
+      function playTrack(row) {
+        const n = row.dataset.track;
+        if (!n) return;
+        iframe.src = `${baseSrc}t=${n}/`;
+        rows.forEach(r => r.classList.toggle('is-active', r === row));
+        const playerSection = document.getElementById('listen');
+        if (playerSection) {
+          iframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+
+      rows.forEach(row => {
+        row.addEventListener('click', () => playTrack(row));
+        row.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            playTrack(row);
+          }
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>
