@@ -354,6 +354,141 @@
     letter-spacing: 0.03em;
   }
 
+  /* Live gallery — uniform square thumb grid */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  @media (min-width: 640px)  { .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 0.7rem; } }
+  @media (min-width: 1024px) { .gallery-grid { grid-template-columns: repeat(4, 1fr); gap: 0.85rem; } }
+
+  .gallery-tile {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #000;
+    cursor: zoom-in;
+    border: 0;
+    padding: 0;
+  }
+  .gallery-tile img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 800ms cubic-bezier(0.2,0.7,0.2,1), filter 600ms, opacity 400ms;
+    filter: saturate(0.95);
+  }
+  .gallery-tile::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0) 50%),
+      linear-gradient(180deg, rgba(200,80,31,0.05), rgba(0,0,0,0.15));
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    transition: opacity 320ms;
+  }
+  .gallery-tile:hover img { transform: scale(1.06); filter: saturate(1.1); }
+  .gallery-tile:hover::after { opacity: 0.55; }
+  .gallery-tile:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+  .gallery-tile-icon {
+    position: absolute;
+    right: 0.55rem; bottom: 0.55rem;
+    width: 1.85rem; height: 1.85rem;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(236,226,205,0.18);
+    display: grid; place-items: center;
+    color: var(--cream);
+    opacity: 0;
+    transform: translateY(4px) scale(0.85);
+    transition: opacity 280ms, transform 320ms cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .gallery-tile:hover .gallery-tile-icon,
+  .gallery-tile:focus-visible .gallery-tile-icon {
+    opacity: 1; transform: translateY(0) scale(1);
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 100;
+    display: none;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(6px);
+    padding: clamp(1rem, 3vw, 2rem);
+    opacity: 0;
+    transition: opacity 280ms;
+  }
+  .lightbox.is-open { display: flex; opacity: 1; }
+  .lightbox-stage {
+    position: relative;
+    max-width: min(1400px, 96vw);
+    max-height: 92vh;
+    width: 100%;
+    display: grid; place-items: center;
+  }
+  .lightbox-img {
+    max-width: 100%;
+    max-height: 92vh;
+    width: auto; height: auto;
+    border-radius: 4px;
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,0.9), 0 0 0 1px rgba(236,226,205,0.06);
+    transition: opacity 220ms;
+  }
+  .lightbox-img.is-loading { opacity: 0.3; }
+  .lightbox-btn {
+    position: absolute;
+    width: 3rem; height: 3rem;
+    border-radius: 999px;
+    background: rgba(20,20,20,0.7);
+    border: 1px solid rgba(236,226,205,0.18);
+    color: var(--cream);
+    display: grid; place-items: center;
+    cursor: pointer;
+    transition: transform 220ms cubic-bezier(0.34,1.56,0.64,1), background-color 200ms, opacity 200ms;
+    z-index: 2;
+  }
+  .lightbox-btn:hover { background: var(--ember); border-color: var(--ember); transform: scale(1.08); }
+  .lightbox-btn:focus-visible { outline: 2px solid var(--ember-hot); outline-offset: 2px; }
+  .lightbox-btn:active { transform: scale(0.96); }
+  .lightbox-close { top: max(0.5rem, env(safe-area-inset-top, 0px)); right: max(0.5rem, env(safe-area-inset-right, 0px)); }
+  .lightbox-prev  { left: -1.5rem; top: 50%; transform: translateY(-50%); }
+  .lightbox-next  { right: -1.5rem; top: 50%; transform: translateY(-50%); }
+  .lightbox-prev:hover { transform: translateY(-50%) scale(1.08); }
+  .lightbox-next:hover { transform: translateY(-50%) scale(1.08); }
+  @media (max-width: 720px) {
+    .lightbox-prev { left: max(0.5rem, env(safe-area-inset-left, 0px)); }
+    .lightbox-next { right: max(0.5rem, env(safe-area-inset-right, 0px)); }
+  }
+  .lightbox-caption {
+    position: absolute;
+    bottom: -2.25rem; left: 0; right: 0;
+    text-align: center;
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--smoke);
+    letter-spacing: 0.04em;
+  }
+  body.lightbox-open { overflow: hidden; touch-action: none; }
+
+  /* Mobile polish */
+  a, button, [role="button"] { -webkit-tap-highlight-color: transparent; }
+  /* Smooth momentum scrolling on iOS, and prevent the URL bar from
+     changing the hero height on every scroll. 100dvh is preferred over 100vh
+     where supported (already used on .hero-shell). */
+  html { -webkit-text-size-adjust: 100%; }
+  /* Reserve space for iPhone home indicator on the very last footer row */
+  footer { padding-bottom: max(3rem, env(safe-area-inset-bottom, 0px)); }
+  /* Keep the hero content above iOS home indicator */
+  .hero-shell > .hero-content:last-of-type { padding-bottom: max(4rem, env(safe-area-inset-bottom, 0px)); }
+
   /* Band quartet — 2x2 portrait grid */
   .band-grid {
     display: grid;
@@ -423,7 +558,7 @@
 
   <!-- HERO with full-bleed image -->
   <section id="top" class="hero-shell">
-    <img class="hero-img" src="/images/IMG_2493 copy.jpg" alt="" />
+    <img class="hero-img" src="/images/web/hero.jpg" alt="" fetchpriority="high" />
     <div class="hero-tint"></div>
     <div class="hero-vignette"></div>
     <div class="grain" style="z-index:2"></div>
@@ -591,7 +726,7 @@
         <div class="lg:col-span-5 order-2 lg:order-1">
           <div class="band-grid shadow-deep-lg -rotate-[1.2deg] rounded-md ring-1 ring-[color:var(--line)] p-1.5 bg-black">
             <figure class="band-tile">
-              <img src="/images/cory.jpg" alt="Cory, well-read lead vocals" />
+              <img src="/images/web/cory.jpg" alt="Cory, well-read lead vocals" />
               <figcaption class="band-tile-caption">
                 <div class="band-tile-name">Cory</div>
                 <div class="band-tile-role">lead vocals</div>
@@ -652,32 +787,8 @@
         <p class="text-[color:var(--bone)]/70 max-w-sm">The Butler Street Derby. The Poetry Lounge. Millvale Music Festival. We hope to see you soon.</p>
       </div>
 
-      <div class="mt-12 grid grid-cols-12 gap-4 sm:gap-6 items-start">
-        <div class="col-span-12 sm:col-span-7">
-          <div class="photo-frame shadow-deep aspect-[4/3]">
-            <img src="/images/IMG_9653 copy.jpg" alt="well-read on a club stage, blue lights, full band" />
-          </div>
-        </div>
-        <div class="col-span-12 sm:col-span-5 sm:row-span-2">
-          <div class="photo-frame shadow-deep aspect-[3/4]">
-            <img src="/images/PXL_20250618_014323829.MP.jpg" alt="well-read live, two guitarists under deep blue and magenta stage light" />
-          </div>
-        </div>
-        <div class="col-span-12 sm:col-span-7">
-          <div class="photo-frame shadow-deep aspect-[4/3]">
-            <img src="/images/CFC0531F-4109-4B6D-874B-574D9A73514B.JPG" alt="well-read live, stage with pride flag backdrop" />
-          </div>
-        </div>
-        <div class="col-span-12 sm:col-span-5">
-          <div class="photo-frame shadow-deep aspect-[3/4]">
-            <img src="/images/IMG_9651 2 copy.jpg" alt="well-read on a small stage washed in disco-light dots, full band" />
-          </div>
-        </div>
-        <div class="col-span-12 sm:col-span-7">
-          <div class="photo-frame shadow-deep aspect-[4/3]">
-            <img src="/images/IMG_2493 copy.jpg" alt="well-read outdoor performance at golden hour" />
-          </div>
-        </div>
+      <div id="gallery" class="mt-12 gallery-grid">
+        <!-- Gallery tiles injected here -->
       </div>
     </div>
   </section>
@@ -734,7 +845,25 @@
     </div>
   </footer>
 
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" aria-hidden="true">
+    <div class="lightbox-stage">
+      <button class="lightbox-btn lightbox-prev" id="lb-prev" aria-label="Previous photo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <img class="lightbox-img" id="lb-img" alt="" />
+      <button class="lightbox-btn lightbox-next" id="lb-next" aria-label="Next photo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="lightbox-btn lightbox-close" id="lb-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6l-6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="lightbox-caption" id="lb-caption" aria-live="polite"></div>
+    </div>
+  </div>
+
   <script>
+    // === Tracklist → Bandcamp deep-link ===
     (() => {
       const iframe = document.getElementById('bc-player');
       if (!iframe) return;
@@ -746,10 +875,7 @@
         if (!n) return;
         iframe.src = `${baseSrc}t=${n}/`;
         rows.forEach(r => r.classList.toggle('is-active', r === row));
-        const playerSection = document.getElementById('listen');
-        if (playerSection) {
-          iframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        iframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
       rows.forEach(row => {
@@ -760,6 +886,109 @@
             playTrack(row);
           }
         });
+      });
+    })();
+
+    // === Gallery + Lightbox ===
+    (() => {
+      const photos = [
+        "BS9A4141","BS9A4143","BS9A4147","BS9A4171","BS9A4189",
+        "BS9A4207","BS9A4211","BS9A4221","BS9A4230","BS9A4233",
+        "BS9A4234","BS9A4243","BS9A4244","BS9A4278","BS9A4316",
+        "BS9A4374","BS9A4385","BS9A4386","BS9A4399","BS9A4404",
+        "BS9A4410","BS9A4417","BS9A4429","BS9A4511","BS9A4530",
+        "BS9A4531","BS9A4539","BS9A4566","BS9A4569","BS9A4590",
+        "8T1A5173"
+      ];
+
+      const grid = document.getElementById('gallery');
+      const lb     = document.getElementById('lightbox');
+      const lbImg  = document.getElementById('lb-img');
+      const lbCap  = document.getElementById('lb-caption');
+      const lbPrev = document.getElementById('lb-prev');
+      const lbNext = document.getElementById('lb-next');
+      const lbClose= document.getElementById('lb-close');
+      if (!grid || !lb) return;
+
+      // Build tiles
+      const frag = document.createDocumentFragment();
+      photos.forEach((name, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'gallery-tile';
+        btn.setAttribute('aria-label', `Open photo ${i + 1} of ${photos.length}`);
+        btn.dataset.index = i;
+        btn.innerHTML = `
+          <img src="/images/web/gallery/thumbs/${name}.jpg" alt="well-read live, photo ${i + 1}" loading="lazy" decoding="async" />
+          <span class="gallery-tile-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15zM7.5 10.5h6M10.5 7.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>`;
+        btn.addEventListener('click', () => openLightbox(i));
+        frag.appendChild(btn);
+      });
+      grid.appendChild(frag);
+
+      let current = 0;
+      let lastFocus = null;
+
+      function openLightbox(i) {
+        current = i;
+        lastFocus = document.activeElement;
+        showCurrent();
+        lb.classList.add('is-open');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('lightbox-open');
+        lbClose.focus({ preventScroll: true });
+      }
+
+      function closeLightbox() {
+        lb.classList.remove('is-open');
+        lb.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('lightbox-open');
+        lbImg.src = '';
+        if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus({ preventScroll: true });
+      }
+
+      function showCurrent() {
+        const name = photos[current];
+        lbImg.classList.add('is-loading');
+        const next = new Image();
+        next.onload = () => {
+          lbImg.src = next.src;
+          lbImg.alt = `well-read live, photo ${current + 1} of ${photos.length}`;
+          lbImg.classList.remove('is-loading');
+        };
+        next.src = `/images/web/gallery/${name}.jpg`;
+        lbCap.textContent = `${current + 1} / ${photos.length}`;
+        // Preload neighbors
+        [current - 1, current + 1].forEach(idx => {
+          if (idx >= 0 && idx < photos.length) {
+            const pre = new Image();
+            pre.src = `/images/web/gallery/${photos[idx]}.jpg`;
+          }
+        });
+      }
+
+      function step(delta) {
+        current = (current + delta + photos.length) % photos.length;
+        showCurrent();
+      }
+
+      lbPrev.addEventListener('click', e => { e.stopPropagation(); step(-1); });
+      lbNext.addEventListener('click', e => { e.stopPropagation(); step(1); });
+      lbClose.addEventListener('click', e => { e.stopPropagation(); closeLightbox(); });
+
+      // Click outside image to close
+      lb.addEventListener('click', e => {
+        if (e.target === lb || e.target.classList.contains('lightbox-stage')) closeLightbox();
+      });
+
+      // Keyboard nav
+      document.addEventListener('keydown', e => {
+        if (!lb.classList.contains('is-open')) return;
+        if (e.key === 'Escape')      closeLightbox();
+        else if (e.key === 'ArrowRight') step(1);
+        else if (e.key === 'ArrowLeft')  step(-1);
       });
     })();
   </script>
